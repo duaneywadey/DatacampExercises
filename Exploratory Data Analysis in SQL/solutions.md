@@ -129,3 +129,96 @@ SELECT revenues_change, count(*)
  -- order by the values of revenues_change
  ORDER BY revenues_change;
 ```
+
+## Division
+Compute the average revenue per employee for Fortune 500 companies by sector.
+
+Instructions
+100 XP
+Compute revenue per employee by dividing revenues by employees; use casting to produce a numeric result.
+Take the average of revenue per employee with avg(); alias this as avg_rev_employee.
+Group by sector.
+Order by the average revenue per employee.
+
+```sql
+-- Select average revenue per employee by sector
+SELECT sector, 
+       avg(revenues/employees::numeric) AS avg_rev_employee
+  FROM fortune500
+ GROUP BY sector
+ -- Use the column alias to order the results
+ ORDER BY avg_rev_employee DESC;
+```
+
+## Explore with division
+In exploring a new database, it can be unclear what the data means and how columns are related to each other.
+
+What information does the unanswered_pct column in the stackoverflow table contain? Is it the percent of questions with the tag that are unanswered (unanswered ?s with tag/all ?s with tag)? Or is it something else, such as the percent of all unanswered questions on the site with the tag (unanswered ?s with tag/all unanswered ?s)?
+
+Divide unanswered_count (unanswered ?s with tag) by question_count (all ?s with tag) to see if the value matches that of unanswered_pct to determine the answer.
+
+Instructions
+100 XP
+Exclude rows where question_count is 0 to avoid a divide by zero error.
+Limit the result to 10 rows.
+
+```sql
+
+-- Divide unanswered_count by question_count
+SELECT unanswered_count/question_count::numeric AS computed_pct, unanswered_pct 
+       -- What are you comparing the above quantity to? 
+  FROM stackoverflow
+  WHERE question_count != 0
+ -- Select rows where question_count is not 0
+ LIMIT 10;
+```
+
+## Summarize numeric columns
+Summarize the profit column in the fortune500 table using the functions you've learned.
+
+You can access the course slides for reference using the PDF icon in the upper right corner of the screen.
+
+Instructions 2/2
+50 XP
+Compute the min(), avg(), max(), and stddev() of profits.
+Now repeat step 1, but summarize profits by sector.
+Order the results by the average profits for each sector.
+
+```sql
+-- Select sector and summary measures of fortune500 profits
+SELECT sector, min(profits), avg(profits), max(profits), stddev(profits)
+  FROM fortune500
+ -- What to group by?
+ GROUP BY sector
+ -- Order by the average profits
+ ORDER BY avg;
+```
+
+## Summarize group statistics
+Sometimes you want to understand how a value varies across groups. For example, how does the maximum value per group vary across groups?
+
+To find out, first summarize by group, and then compute summary statistics of the group results. One way to do this is to compute group values in a subquery, and then summarize the results of the subquery.
+
+For this exercise, what is the standard deviation across tags in the maximum number of Stack Overflow questions per day? What about the mean, min, and max of the maximums as well?
+
+Instructions
+0 XP
+Start by writing a subquery to compute the max() of question_count per tag; alias the subquery result as maxval.
+Then compute the standard deviation of maxval with stddev().
+Compute the min(), max(), and avg() of maxval too.
+
+```sql
+-- Compute standard deviation of maximum values
+SELECT stddev(maxval),
+       -- min
+       min(maxval),
+       -- max
+       max(maxval),
+       -- avg
+       avg(maxval)
+  -- Subquery to compute max of question_count by tag
+  FROM (SELECT max(question_count) AS maxval
+          FROM stackoverflow
+         -- Compute max by...
+         GROUP BY tag) AS max_results; -- alias for subquery
+```
