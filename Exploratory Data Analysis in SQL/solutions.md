@@ -222,3 +222,74 @@ SELECT stddev(maxval),
          -- Compute max by...
          GROUP BY tag) AS max_results; -- alias for subquery
 ```
+
+## Truncate
+Use trunc() to examine the distributions of attributes of the Fortune 500 companies.
+
+Remember that trunc() truncates numbers by replacing lower place value digits with zeros:
+
+trunc(value_to_truncate, places_to_truncate)
+Negative values for places_to_truncate indicate digits to the left of the decimal to replace, while positive values indicate digits to the right of the decimal to keep.
+
+Instructions 1/2
+0 XP
+Use trunc() to truncate employees to the 100,000s (5 zeros).
+Count the number of observations with each truncated value.
+Repeat step 1 for companies with < 100,000 employees (most common).
+This time, truncate employees to the 10,000s place.
+
+```sql
+-- Truncate employees
+SELECT trunc(employees, -5) AS employee_bin,
+       -- Count number of companies with each truncated value
+       count(*)
+  FROM fortune500
+ -- Use alias to group
+ GROUP BY employee_bin
+ -- Use alias to order
+ ORDER BY employee_bin;
+```
+
+## Generate series
+Summarize the distribution of the number of questions with the tag "dropbox" on Stack Overflow per day by binning the data.
+
+Recall:
+
+generate_series(from, to, step)
+You can reference the slides using the PDF icon in the upper right corner of the screen.
+
+Instructions 3/3
+0 XP
+Instructions 3/3
+0 XP
+Select lower and upper from bins, along with the count of values within each bin bounds.
+
+To do this, you'll need to join 'dropbox', which contains the question_count for tag "dropbox", to the bins created by generate_series().
+
+The join should occur where the count is greater than or equal to the lower bound, and strictly less than the upper bound.
+
+```sql
+-- Bins created in Step 2
+WITH bins AS (
+      SELECT generate_series(2200, 3050, 50) AS lower,
+             generate_series(2250, 3100, 50) AS upper),
+     -- Subset stackoverflow to just tag dropbox (Step 1)
+     dropbox AS (
+      SELECT question_count 
+        FROM stackoverflow
+       WHERE tag='dropbox') 
+-- Select columns for result
+-- What column are you counting to summarize?
+SELECT lower, upper, count(question_count) 
+  FROM bins  -- Created above
+       -- Join to dropbox (created above), 
+       -- keeping all rows from the bins table in the join
+       LEFT JOIN dropbox
+       -- Compare question_count to lower and upper
+         ON question_count >= lower 
+        AND question_count < upper
+ -- Group by lower and upper to count values in each bin
+ GROUP BY lower, upper
+ -- Order by lower to put bins in order
+ ORDER BY lower;
+```
