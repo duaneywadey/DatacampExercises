@@ -435,10 +435,14 @@ Compute the correlations between each pair of profits, profits_change, and reven
 
 The resulting temporary table should have the following structure:
 
-measure	profits	profits_change	revenues_change
-profits	1.00	#	#
-profits_change	#	1.00	#
-revenues_change	#	#	1.00
+|measure |profits|	profits_change|	revenues_change|
+| :---:   | :---: | :---: | :---: | :---: |
+|profits |	1.00|	#|	#|
+| :---:   | :---: | :---: | :---: | :---: |
+|profits_change|	#|	1.00|	#|
+| :---:   | :---: | :---: | :---: | :---: |
+|revenues_change|	#|	#|	1.00|
+
 Recall the round() function to make the results more readable:
 ```
 round(column_name::numeric, decimal_places)
