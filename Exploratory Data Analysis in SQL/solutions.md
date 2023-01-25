@@ -496,8 +496,151 @@ SELECT measure,
   FROM correlations;
 ```
 
+## Count the categories
+In this chapter, we'll be working mostly with the Evanston 311 data in table evanston311. This is data on help requests submitted to the city of Evanston, IL.
 
+This data has several character columns. Start by examining the most frequent values in some of these columns to get familiar with the common categories.
 
+How many rows does each priority level have?
 
+```sql
+-- Select the count of each level of priority
+SELECT priority, count(*) -- Find values of source that appear in at least 100 rows
+-- Also get the count of each value
+SELECT DISTINCT(source), count(*)
+  FROM evanston311
+ GROUP BY source
+HAVING count(*)  >=100;
+  FROM evanston311
 
+  Select the five most common values of street and the count of each.
 
+  ```sql
+-- Find the 5 most common values of street and the count of each
+SELECT street, count(*)
+  FROM evanston311
+ GROUP BY street
+ ORDER BY count(*) DESC
+ LIMIT 5;
+  ```
+ GROUP BY priority;
+```
+
+How many distinct values of zip appear in at least 100 rows?
+
+```sql
+-- Find values of zip that appear in at least 100 rows
+-- Also get the count of each value
+SELECT zip, count(*) 
+  FROM evanston311
+ GROUP BY zip
+HAVING count(*) >=100; 
+```
+
+How many distinct values of source appear in at least 100 rows?
+
+```sql
+-- Find values of source that appear in at least 100 rows
+-- Also get the count of each value
+SELECT DISTINCT(source), count(*)
+  FROM evanston311
+ GROUP BY source
+HAVING count(*)  >=100;
+```
+
+Select the five most common values of street and the count of each.
+
+```sql
+-- Find the 5 most common values of street and the count of each
+SELECT street, count(*)
+  FROM evanston311
+ GROUP BY street
+ ORDER BY count(*) DESC
+ LIMIT 5;
+```
+
+## Trimming
+Some of the street values in evanston311 include house numbers with # or / in them. In addition, some street values end in a ..
+
+Remove the house numbers, extra punctuation, and any spaces from the beginning and end of the street values as a first attempt at cleaning up the values.
+
+Instructions
+0 XP
+Trim digits 0-9, #, /, ., and spaces from the beginning and end of street.
+Select distinct original street value and the corrected street value.
+Order the results by the original street value.
+
+```sql
+SELECT distinct street,
+       -- Trim off unwanted characters from street
+       trim(street, '0123456789 #/.') AS cleaned_street
+  FROM evanston311
+ ORDER BY street;
+```
+
+## Exploring unstructured text
+The description column of evanston311 has the details of the inquiry, while the category column groups inquiries into different types. How well does the category capture what's in the description?
+
+LIKE and ILIKE queries will help you find relevant descriptions and categories. Remember that with LIKE queries, you can include a % on each side of a word to find values that contain the word. For example:
+
+```
+SELECT category
+  FROM evanston311
+ WHERE category LIKE '%Taxi%';
+% matches 0 or more characters.
+```
+
+Building up the query through the steps below, find inquires that mention trash or garbage in the description without trash or garbage being in the category. What are the most frequent categories for such inquiries?
+
+Use ILIKE to count rows in evanston311 where the description contains 'trash' or 'garbage' regardless of case.
+
+```SQL
+-- Count rows
+SELECT COUNT(*)
+  FROM evanston311
+ -- Where description includes trash or garbage
+ WHERE description ILIKE '%trash%' OR
+    description ILIKE '%garbage%';
+```
+
+category values are in title case. Use LIKE to find category values with 'Trash' or 'Garbage' in them.
+
+```SQL
+-- Select categories containing Trash or Garbage
+SELECT category
+  FROM evanston311
+ -- Use LIKE
+ WHERE category LIKE '%Trash%' 
+    OR category LIKE '%Garbage%';
+```
+
+Count rows where the description includes 'trash' or 'garbage' but the category does not.
+
+```SQL
+-- Count rows
+SELECT count(*)
+  FROM evanston311 
+ -- description contains trash or garbage (any case)
+ WHERE (description ILIKE '%trash%'
+    OR description ILIKE '%garbage%') 
+ -- category does not contain Trash or Garbage
+   AND category NOT LIKE '%Trash%'
+   AND category NOT LIKE '%Garbage%';
+```
+
+Find the most common categories for rows with a description about trash that don't have a trash-related category.
+
+```SQL
+-- Count rows with each category
+SELECT category, count(*)
+  FROM evanston311 
+ WHERE (description ILIKE '%trash%'
+    OR description ILIKE '%garbage%') 
+   AND category NOT LIKE '%Trash%'
+   AND category NOT LIKE '%Garbage%'
+ -- What are you counting?
+ GROUP BY category
+ --- order by most frequent values
+ ORDER BY count(*) DESC
+ LIMIT 10;
+```
