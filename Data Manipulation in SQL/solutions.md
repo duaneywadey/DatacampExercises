@@ -763,3 +763,181 @@ SELECT
 FROM match
 GROUP BY season;
 ```
+
+## Nest a subquery in FROM
+What's the average number of matches per season where a team scored 5 or more goals? How does this differ by country?
+
+Let's use a nested, correlated subquery to perform this operation. In the real world, you will probably find that nesting multiple subqueries is a task you don't have to perform often. In some cases, however, you may find yourself struggling to properly group by the column you want, or to calculate information requiring multiple mathematical transformations (i.e., an AVG of a COUNT).
+
+Nesting subqueries and performing your transformations one step at a time, adding it to a subquery, and then performing the next set of transformations is often the easiest way to yield accurate information about your data. Let's get to it!
+
+Instructions 1/3
+35 XP
+1
+2
+3
+Generate a list of matches where at least one team scored 5 or more goals.
+
+```sql
+-- Select matches where a team scored 5+ goals
+SELECT
+	country_id,
+    season,
+	id
+FROM match
+WHERE home_goal >= 5 OR away_goal >= 5;
+```
+
+Turn the query from the previous step into a subquery in the FROM statement.
+COUNT the match ids generated in the previous step, and group the query by country_id and season
+
+```sql
+-- Count match ids
+SELECT
+    country_id,
+    season,
+    COUNT(id) AS matches
+-- Set up and alias the subquery
+FROM (
+	SELECT
+    	country_id,
+    	season,
+    	id
+	FROM match
+	WHERE home_goal >= 5 OR away_goal >= 5) 
+    AS subquery
+-- Group by country_id and season
+GROUP BY country_id, season;
+```
+
+Finally, declare the same query from step 2 as a subquery in FROM with the alias outer_s.
+Left join it to the country table using the outer query's country_id column.
+Calculate an AVG of high scoring matches per country in the main query.
+
+```sql
+SELECT
+	c.name AS country,
+    -- Calculate the average matches per season
+    AVG(outer_s.matches) AS avg_seasonal_high_scores
+FROM country AS c
+-- Left join outer_s to country
+LEFT JOIN (
+  SELECT country_id, season,
+         COUNT(id) AS matches
+  FROM (
+    SELECT country_id, season, id
+	FROM match
+	WHERE home_goal >= 5 OR away_goal >= 5) AS inner_s
+  -- Close parentheses and alias the subquery
+  GROUP BY country_id, season) AS outer_s
+ON c.id = outer_s.country_id
+GROUP BY country;
+```
+
+## Clean up with CTEs
+In chapter 2, you generated a list of countries and the number of matches in each country with more than 10 total goals. The query in that exercise utilized a subquery in the FROM statement in order to filter the matches before counting them in the main query. Below is the query you created:
+
+```
+SELECT
+  c.name AS country,
+  COUNT(sub.id) AS matches
+FROM country AS c
+INNER JOIN (
+  SELECT country_id, id 
+  FROM match
+  WHERE (home_goal + away_goal) >= 10) AS sub
+ON c.id = sub.country_id
+GROUP BY country;
+```
+
+You can list one (or more) subqueries as common table expressions (CTEs) by declaring them ahead of your main query, which is an excellent tool for organizing information and placing it in a logical order.
+
+In this exercise, let's rewrite a similar query using a CTE.
+
+Instructions
+100 XP
+Complete the syntax to declare your CTE.
+Select the country_id and match id from the match table in your CTE.
+Left join the CTE to the league table using country_id.
+
+```sql
+-- Set up your CTE
+WITH match_list AS (
+    SELECT 
+  		country_id, 
+  		id
+    FROM match
+    WHERE (home_goal + away_goal) >= 10)
+-- Select league and count of matches from the CTE
+SELECT
+    l.name AS league,
+    COUNT(match_list.id) AS matches
+FROM league AS l
+-- Join the CTE to the league table
+LEFT JOIN match_list 
+ON l.id = match_list.country_id
+GROUP BY l.name;
+```
+
+## Organizing with CTEs
+Previously, you modified a query based on a statement you completed in chapter 2 using common table expressions.
+
+This time, let's expand on the exercise by looking at details about matches with very high scores using CTEs. Just like a subquery in FROM, you can join tables inside a CTE.
+
+Instructions
+100 XP
+Declare your CTE, where you create a list of all matches with the league name.
+Select the league, date, home, and away goals from the CTE.
+Filter the main query for matches with 10 or more goals.
+
+```sql
+-- Set up your CTE
+WITH match_list AS (
+  -- Select the league, date, home, and away goals
+    SELECT 
+  		l.name AS league, 
+     	m.date, 
+  		m.home_goal, 
+  		m.away_goal,
+       (m.home_goal + m.away_goal) AS total_goals
+    FROM match AS m
+    LEFT JOIN league as l ON m.country_id = l.id)
+-- Select the league, date, home, and away goals from the CTE
+SELECT league, date, home_goal, away_goal
+FROM match_list
+-- Filter by total goals
+WHERE total_goals >= 10;
+```
+
+## CTEs with nested subqueries
+If you find yourself listing multiple subqueries in the FROM clause with nested statement, your query will likely become long, complex, and difficult to read.
+
+Since many queries are written with the intention of being saved and re-run in the future, proper organization is key to a seamless workflow. Arranging subqueries as CTEs will save you time, space, and confusion in the long run!
+
+Instructions
+100 XP
+Declare a CTE that calculates the total goals from matches in August of the 2013/2014 season.
+Left join the CTE onto the league table using country_id from the match_list CTE.
+Filter the list on the inner subquery to only select matches in August of the 2013/2014 season.
+
+```sql
+-- Set up your CTE
+WITH match_list AS (
+    SELECT 
+  		country_id, 
+  	   (home_goal + away_goal) AS goals
+    FROM match
+    -- Create a list of match IDs to filter data in the CTE
+    WHERE id IN (
+       SELECT id
+       FROM match
+       WHERE season = '2013/2014' AND EXTRACT(MONTH FROM date) = 08))
+-- Select the league name and average of goals in the CTE
+SELECT
+	l.name,
+    AVG(match_list.goals)
+FROM league AS l
+-- Join the CTE onto the league table
+LEFT JOIN match_list ON l.id = match_list.country_id
+GROUP BY l.name;
+```
