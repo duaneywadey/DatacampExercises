@@ -169,3 +169,116 @@ LEFT JOIN actors AS a
 ON a.actor_id = ac.actor_id;
 ```
 
+## Income from movies
+How much income did each movie generate? To answer this question subsequent SELECT statements can be used.
+
+Instructions 1/3
+35 XP
+3
+Use a join to get the movie title and price for each movie rental.
+
+```sql
+SELECT m.title, m.renting_price
+-- Use a join to get the movie title and price for each movie rental
+       
+FROM renting AS r
+LEFT JOIN movies AS m
+ON r.movie_id = m.movie_id;
+```
+
+Report the total income for each movie.
+Order the result by decreasing income.
+
+```sql
+SELECT rm.title, -- Report the income from movie rentals for each movie 
+       SUM(rm.renting_price) AS income_movie
+FROM
+       (SELECT m.title, 
+               m.renting_price
+       FROM renting AS r
+       LEFT JOIN movies AS m
+       ON r.movie_id=m.movie_id) AS rm
+GROUP BY rm.title
+ORDER BY income_movie DESC; -- Order the result by decreasing income
+```
+## Age of actors from the USA
+Now you will explore the age of American actors and actresses. Report the date of birth of the oldest and youngest US actor and actress.
+
+Instructions
+100 XP
+Create a subsequent SELECT statements in the FROM clause to get all information about actors from the USA.
+Give the subsequent SELECT statement the alias a.
+Report for actors from the USA the year of birth of the oldest and the year of birth of the youngest actor and actress.
+
+```sql
+SELECT a.gender, -- Report for male and female actors from the USA 
+       min(a.year_of_birth), -- The year of birth of the oldest actor
+       max(a.year_of_birth) -- The year of birth of the youngest actor
+FROM
+   (SELECT * FROM actors WHERE nationality = 'USA') as a -- Use a subsequen SELECT to get all information about actors from the USA
+  
+    -- Give the table the name a
+GROUP BY a.gender;
+```
+## Identify favorite movies for a group of customers
+Which is the favorite movie on MovieNow? Answer this question for a specific group of customers: for all customers born in the 70s.
+
+Instructions 1/4
+25 XP
+Augment the table renting with customer information and information about the movies.
+For each join use the first letter of the table name as alias.
+
+```SQL
+SELECT *
+FROM renting AS r
+LEFT JOIN customers c   -- Add customer information
+on r.customer_id = c.customer_id
+LEFT JOIN movies m   -- Add movie information
+on r.movie_id = m.movie_id;
+```
+
+Select only those records of customers born in the 70s.
+
+```SQL
+SELECT *
+FROM renting AS r
+LEFT JOIN customers AS c
+ON c.customer_id = r.customer_id
+LEFT JOIN movies AS m
+ON m.movie_id = r.movie_id
+WHERE c.date_of_birth BETWEEN '1970-01-01'  AND '1979-12-31'; -- Select customers born in the 70s
+```
+
+For each movie, report the number of times it was rented, as well as the average rating. Limit your results to customers born in the 1970s.
+
+```sql
+SELECT m.title, 
+count(*), -- Report number of views per movie
+avg(rating) -- Report the average rating per movie
+FROM renting AS r
+LEFT JOIN customers AS c
+ON c.customer_id = r.customer_id
+LEFT JOIN movies AS m
+ON m.movie_id = r.movie_id
+WHERE c.date_of_birth BETWEEN '1970-01-01' AND '1979-12-31'
+group by m.title;
+```
+
+Remove those movies from the table with only one rental.
+Order the result table such that movies with highest rating come first.
+
+```sql
+SELECT m.title, 
+COUNT(*),
+AVG(r.rating)
+FROM renting AS r
+LEFT JOIN customers AS c
+ON c.customer_id = r.customer_id
+LEFT JOIN movies AS m
+ON m.movie_id = r.movie_id
+WHERE c.date_of_birth BETWEEN '1970-01-01' AND '1979-12-31'
+GROUP BY m.title
+HAVING count(r.renting_id) > 1 -- Remove movies with only one rental
+ORDER BY AVG(r.rating); -- Order with highest rating first
+```
+
