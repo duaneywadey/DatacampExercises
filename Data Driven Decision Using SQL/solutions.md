@@ -463,3 +463,30 @@ WHERE movie_id IN
      FROM renting));
 ```
 
+## Analyzing customer behavior
+A new advertising campaign is going to focus on customers who rented fewer than 5 movies. Use a correlated query to extract all customer information for the customers of interest.
+
+Instructions 1/2
+0 XP
+1
+2
+First, count number of movie rentals for customer with customer_id=45. Give the table renting the alias r.
+
+```sql
+-- Count movie rentals of customer 45
+SELECT COUNT(*)
+FROM renting as r
+WHERE r.customer_id = 45;
+```
+Now select all columns from the customer table where the number of movie rentals is smaller than 5.
+
+```sql
+-- Select customers with less than 5 movie rentals
+SELECT *
+FROM customers as c
+WHERE 5 > 
+  (SELECT count(*)
+  FROM renting as r
+  WHERE r.customer_id=c.customer_id);
+```
+
