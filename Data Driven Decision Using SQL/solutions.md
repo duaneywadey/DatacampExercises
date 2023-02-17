@@ -489,4 +489,229 @@ WHERE 5 >
   FROM renting as r
   WHERE r.customer_id=c.customer_id);
 ```
+## Customers who gave low ratings
+Identify customers who were not satisfied with movies they watched on MovieNow. Report a list of customers with minimum rating smaller than 4.
 
+Instructions 1/2
+50 XP
+Calculate the minimum rating of customer with ID 7.
+
+```sql
+-- Calculate the minimum rating of customer with ID 7
+SELECT min(rating)
+FROM renting
+WHERE customer_id = 7;
+````
+Select all customers with a minimum rating smaller than 4. Use the first letter of the table as an alias.
+
+```sql
+SELECT *
+FROM customers AS c
+WHERE 4 >  -- Select all customers with a minimum rating smaller than 4
+  (SELECT MIN(rating)
+  FROM renting AS r
+  WHERE r.customer_id = c.customer_id);
+```
+
+## Movies and ratings with correlated queries
+Report a list of movies that received the most attention on the movie platform, (i.e. report all movies with more than 5 ratings and all movies with an average rating higher than 8).
+
+Instructions 1/2
+0 XP
+Select all movies with more than 5 ratings. Use the first letter of the table as an alias.
+
+```SQL
+SELECT *
+FROM movies AS m
+WHERE 5 < -- Select all movies with more than 5 ratings
+  (SELECT COUNT(rating)
+  FROM renting AS r
+  WHERE r.movie_id = m.movie_id);
+```
+
+Select all movies with an average rating higher than 8.
+
+```SQL
+SELECT *
+FROM movies AS m
+WHERE 8 < -- Select all movies with an average rating higher than 8
+  (SELECT AVG(rating)
+  FROM renting AS r
+  WHERE r.movie_id = m.movie_id);
+```
+
+## Customers with at least one rating
+Having active customers is a key performance indicator for MovieNow. Make a list of customers who gave at least one rating.
+
+Instructions 1/4
+25 XP
+Select all records of movie rentals from customer with ID 115.
+
+```SQL
+-- Select all records of movie rentals from customer with ID 115
+SELECT * FROM renting
+WHERE customer_id = 115;
+```
+
+Select all records of movie rentals from the customer with ID 115 and exclude records with null ratings.
+
+```SQL
+SELECT *
+FROM renting
+WHERE RATING IS NOT NULL -- Exclude those with null ratings
+AND customer_id = 115;
+```
+
+Select all records of movie rentals from the customer with ID 1, excluding null ratings.
+```SQL
+SELECT *
+FROM renting
+WHERE rating IS NOT NULL -- Exclude null ratings
+AND customer_id = 1; -- Select all ratings from customer with ID 1
+```
+
+Select all customers with at least one rating. Use the first letter of the table as an alias.
+
+```SQL
+SELECT *
+FROM customers AS c -- Select all customers with at least one rating
+WHERE EXISTS
+  (SELECT *
+  FROM renting AS r
+  WHERE rating IS NOT NULL 
+  AND r.customer_id = c.customer_id);
+```
+
+## Actors in comedies
+In order to analyze the diversity of actors in comedies, first, report a list of actors who play in comedies and then, the number of actors for each nationality playing in comedies.
+
+Select the records of all actors who play in a Comedy. Use the first letter of the table as an alias.
+
+```sql
+SELECT *  -- Select the records of all actors who play in a Comedy
+FROM actsin AS ai
+LEFT JOIN movies AS m
+ON ai.movie_id = m.movie_id
+WHERE m.genre = 'Comedy';
+```
+Make a table of the records of actors who play in a Comedy and select only the actor with ID 1.
+
+```sql
+SELECT *
+FROM actsin AS ai
+LEFT JOIN movies AS m
+ON m.movie_id = ai.movie_id
+WHERE m.genre = 'Comedy'
+AND ai.actor_id = 1; -- Select only the actor with ID 1
+```
+
+Create a list of all actors who play in a Comedy. Use the first letter of the table as an alias.
+
+```sql
+SELECT *
+FROM actors AS a 
+WHERE EXISTS
+  (SELECT *
+   FROM actsin AS ai
+   LEFT JOIN movies AS m
+   ON m.movie_id = ai.movie_id
+   WHERE m.genre = 'Comedy'
+   AND ai.actor_id = a.actor_id);
+```
+
+Report the nationality and the number of actors for each nationality.
+
+```sql
+SELECT a.nationality, COUNT(*) -- Report the nationality and the number of actors for each nationality
+FROM actors AS a
+WHERE EXISTS
+  (SELECT ai.actor_id
+   FROM actsin AS ai
+   LEFT JOIN movies AS m
+   ON m.movie_id = ai.movie_id
+   WHERE m.genre = 'Comedy'
+   AND ai.actor_id = a.actor_id)
+GROUP BY a.nationality;
+```
+
+## Young actors not coming from the USA
+As you've just seen, the operators UNION and INTERSECT are powerful tools when you work with two or more tables. Identify actors who are not from the USA and actors who were born after 1990.
+
+Instructions 3/4
+25 XP
+Select all actors who are not from the USA and all actors who are born after 1990.
+
+```SQL
+SELECT name, 
+       nationality, 
+       year_of_birth
+FROM actors
+WHERE nationality <> 'USA'
+UNION -- Select all actors who are not from the USA and all actors who are born after 1990
+SELECT name, 
+       nationality, 
+       year_of_birth
+FROM actors
+WHERE year_of_birth > 1990;
+```
+
+Select all actors who are not from the USA and who are also born after 1990.
+
+```SQL
+SELECT name, 
+       nationality, 
+       year_of_birth
+FROM actors
+WHERE nationality <> 'USA'
+INTERSECT -- Select all actors who are not from the USA and who are also born after 1990
+SELECT name, 
+       nationality, 
+       year_of_birth
+FROM actors
+WHERE year_of_birth > 1990;
+```
+
+## Dramas with high ratings
+The advertising team has a new focus. They want to draw the attention of the customers to dramas. Make a list of all movies that are in the drama genre and have an average rating higher than 9.
+
+Instructions 2/4
+25 XP
+3
+4
+Select the IDs of all movies with average rating higher than 9.
+
+```sql
+SELECT m.movie_id -- Select the IDs of all movies with average rating higher than 9
+FROM movies AS m
+LEFT JOIN renting AS r ON
+m.movie_id = r.movie_id
+GROUP BY m.movie_id
+HAVING avg(r.rating) > 9;
+```
+Select the IDs of all dramas with average rating higher than 9
+
+```SQL
+SELECT movie_id
+FROM movies
+WHERE genre = 'Drama'
+INTERSECT  -- Select the IDs of all dramas with average rating higher than 9
+SELECT movie_id
+FROM renting
+GROUP BY movie_id
+HAVING AVG(rating)>9;
+```
+Select all movies of in the drama genre with an average rating higher than 9.
+
+```SQL
+SELECT *
+FROM movies
+WHERE movie_id IN -- Select all movies of genre drama with average rating higher than 9
+   (SELECT movie_id
+    FROM movies
+    WHERE genre = 'Drama'
+    INTERSECT
+    SELECT movie_id
+    FROM renting
+    GROUP BY movie_id
+    HAVING AVG(rating)>9);
+```
