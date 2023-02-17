@@ -3,7 +3,7 @@
 ## First account for each country.
 Conduct an analysis to see when the first customer accounts were created for each country.
 
-Instructions
+
 100 XP
 Create a table with a row for each country and columns for the country name and the date when the first customer account was created.
 Use the alias first_account for the column with the dates.
@@ -19,7 +19,7 @@ ORDER BY first_account;
 ## Average movie ratings
 For each movie the average rating, the number of ratings and the number of views has to be reported. Generate a table with meaningful column names.
 
-Instructions 1/4
+ 1/4
 25 XP
 Group the data in the table renting by movie_id and report the ID and the average rating.
 
@@ -57,7 +57,7 @@ order by avg_rating desc; -- Order by average rating in decreasing order
 ## Average rating per customer
 Similar to what you just did, you will now look at the average movie ratings, this time for customers. So you will obtain a table with the average rating given by each customer. Further, you will include the number of ratings and the number of movie rentals per customer. You will report these summary statistics only for customers with more than 7 movie rentals and order them in ascending order by the average rating.
 
-Instructions
+
 0 XP
 Group the data in the table renting by customer_id and report the customer_id, the average rating, the number of ratings and the number of movie rentals.
 Select only customers with more than 7 movie rentals.
@@ -78,7 +78,7 @@ ORDER BY AVG(rating); -- Order by the average rating in ascending order
 ## Join renting and customers
 For many analyses it is necessary to add customer information to the data in the table renting.
 
-Instructions 1/3
+ 1/3
 35 XP
 Augment the table renting with all columns from the table customers with a LEFT JOIN.
 Use as alias' for the tables r and c respectively.
@@ -113,7 +113,7 @@ WHERE c.country='Belgium';
 ## Aggregating revenue, rentals and active customers
 The management of MovieNow wants to report key performance indicators (KPIs) for the performance of the company in 2018. They are interested in measuring the financial successes as well as user engagement. Important KPIs are, therefore, the profit coming from movie rentals, the number of movie rentals and the number of active customers.
 
-Instructions 1/3
+ 1/3
 35 XP
 First, you need to join movies on renting to include the renting_price from the movies table for each renting record.
 Use as alias' for the tables m and r respectively.
@@ -154,7 +154,7 @@ WHERE date_renting BETWEEN '2018-01-01' AND '2018-12-31';
 ## Movies and actors
 You are asked to give an overview of which actors play in which movie.
 
-Instructions
+
 100 XP
 Create a list of actor names and movie titles in which they act. Make sure that each combination of actor and movie appears only once.
 Use as an alias for the table actsin the two letters ai.
@@ -172,7 +172,7 @@ ON a.actor_id = ac.actor_id;
 ## Income from movies
 How much income did each movie generate? To answer this question subsequent SELECT statements can be used.
 
-Instructions 1/3
+ 1/3
 35 XP
 3
 Use a join to get the movie title and price for each movie rental.
@@ -204,7 +204,7 @@ ORDER BY income_movie DESC; -- Order the result by decreasing income
 ## Age of actors from the USA
 Now you will explore the age of American actors and actresses. Report the date of birth of the oldest and youngest US actor and actress.
 
-Instructions
+
 100 XP
 Create a subsequent SELECT statements in the FROM clause to get all information about actors from the USA.
 Give the subsequent SELECT statement the alias a.
@@ -223,7 +223,7 @@ GROUP BY a.gender;
 ## Identify favorite movies for a group of customers
 Which is the favorite movie on MovieNow? Answer this question for a specific group of customers: for all customers born in the 70s.
 
-Instructions 1/4
+ 1/4
 25 XP
 Augment the table renting with customer information and information about the movies.
 For each join use the first letter of the table name as alias.
@@ -285,7 +285,7 @@ ORDER BY AVG(r.rating); -- Order with highest rating first
 ## Identify favorite actors for Spain
 You're now going to explore actor popularity in Spain. Use as alias the first letter of the table, except for the table actsin use ai instead.
 
-Instructions 1/3
+ 1/3
 1 XP
 2
 3
@@ -346,7 +346,7 @@ ORDER BY avg_rating DESC, number_views DESC;
 ## KPIs per country
 In chapter 1 you were asked to provide a report about the development of the company. This time you have to prepare a similar report with KPIs for each country separately. Your manager is interested in the total number of movie rentals, the average rating of all movies and the total revenue for each country since the beginning of 2019.
 
-Instructions 1/2
+ 1/2
 50 XP
 Augment the table renting with information about customers and movies.
 Use as alias the first latter of the table name.
@@ -380,5 +380,86 @@ LEFT JOIN movies AS m
 ON m.movie_id = r.movie_id
 WHERE date_renting >= '2019-01-01'
 GROUP BY c.country;
+```
+
+## Often rented movies
+Your manager wants you to make a list of movies excluding those which are hardly ever watched. This list of movies will be used for advertising. List all movies with more than 5 views using a nested query which is a powerful tool to implement selection conditions.
+
+ 1/2
+0 XP
+Select all movie IDs which have more than 5 views.
+
+```SQL
+SELECT movie_id -- Select movie IDs with more than 5 views
+FROM renting
+GROUP BY movie_id
+HAVING COUNT(*) > 5
+```
+
+Select all information about movies with more than 5 views.
+
+```SQL
+SELECT *
+FROM movies
+WHERE movie_id IN    -- Select movie IDs from the inner query
+  (SELECT movie_id
+  FROM renting
+  GROUP BY movie_id
+  HAVING COUNT(*) > 5)
+```
+
+## Frequent customers
+Report a list of customers who frequently rent movies on MovieNow.
+
+
+70 XP
+List all customer information for customers who rented more than 10 movies.
+
+```SQL
+SELECT *
+FROM customers
+WHERE customer_id IN            -- Select all customers with more than 10 movie rentals
+  (SELECT customer_id
+  FROM renting
+  GROUP BY customer_id
+  HAVING COUNT(renting_id) > 10);
+```
+## Movies with rating above average
+For the advertising campaign your manager also needs a list of popular movies with high ratings. Report a list of movies with rating above average.
+
+ 2/3
+1 XP
+2
+3
+Select movie IDs and calculate the average rating of movies with rating above average.
+
+```sql
+SELECT movie_id,  -- Select movie IDs and calculate the average rating 
+       AVG(rating)
+FROM renting
+GROUP BY movie_id
+HAVING AVG(rating) >   -- Of movies with rating above average
+  (SELECT AVG(rating)
+  FROM renting);
+```
+
+## Movies with rating above average
+For the advertising campaign your manager also needs a list of popular movies with high ratings. Report a list of movies with rating above average.
+
+ 3/3
+30 XP
+3
+The advertising team only wants a list of movie titles. Report the movie titles of all movies with average rating higher than the total average.
+
+```sql
+SELECT title -- Report the movie titles of all movies with average rating higher than the total average
+FROM movies
+WHERE movie_id IN
+  (SELECT movie_id
+   FROM renting
+     GROUP BY movie_id
+     HAVING AVG(rating) > 
+    (SELECT AVG(rating)
+     FROM renting));
 ```
 
