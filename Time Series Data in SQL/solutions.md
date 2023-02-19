@@ -1147,7 +1147,7 @@ Among the ranking window functions, ROW_NUMBER() is the most common, followed by
 
 In this exercise, we would like to determine how frequently each we see incident type 3 in our data set. We would like to rank the number of incidents in descending order, such that the date with the highest number of incidents has a row number, rank, and dense rank of 1, and so on. To make it easier to follow, we will only include dates with at least 8 incidents.
 
-Instructions
+
 100 XP
 Fill in each window function based on the column alias. You should include ROW_NUMBER(), RANK(), and DENSE_RANK() exactly once.
 Fill in the OVER clause ordering by ir.NumberOfIncidents in descending order.
@@ -1174,7 +1174,7 @@ There are several aggregate window functions available to you. In this exercise,
 
 Our window this time will be the entire data set, meaning that our OVER() clause will remain empty.
 
-Instructions
+
 100 XP
 Fill in the correct aggregate function for each column in the result set.
 
@@ -1197,7 +1197,7 @@ AND ir.IncidentTypeID = 3;
 ## Running totals with SUM()
 One of the more powerful uses of window functions is calculating running totals: an ongoing tally of a particular value over a given stretch of time. Here, we would like to use a window function to calculate how many incidents have occurred on each date and incident type in July of 2019 as well as a running tally of the total number of incidents by incident type. A window function will help us solve this problem in one query.
 
-Instructions
+
 100 XP
 Fill in the correct window function.
 Fill in the PARTITION BY clause in the window function, partitioning by incident type ID.
@@ -1232,7 +1232,7 @@ Instead of looking at a running total from the beginning of time until now, mana
 
 SQL Server does not have the ability to look at ranges of time in window functions, so we will need to assume that there is one row per day and use the ROWS clause.
 
-Instructions
+
 100 XP
 Fill in the correct window function to perform a moving average starting from 6 days ago through today (the current row).
 Fill in the window frame, including the ROWS clause, window frame preceding, and window frame following.
@@ -1265,7 +1265,7 @@ The LAG() and LEAD() window functions give us the ability to look backward or fo
 
 In this exercise, we want to compare the number of security incidents by day for incident types 1 and 2 during July of 2019, specifically the period starting on July 2nd and ending July 31st.
 
-Instructions
+
 100 XP
 Fill in the window function to return the prior day's number of incidents, partitioned by incident type ID and ordered by the incident date.
 Fill in the window function to return the next day's number of incidents, partitioned by incident type ID and ordered by the incident date.
@@ -1303,7 +1303,7 @@ The LAG() and LEAD() window functions give us the ability to look backward or fo
 
 In this exercise, we want to compare the number of security incidents by day for incident types 1 and 2 during July of 2019, specifically the period starting on July 2nd and ending July 31st. Management would like to see a rolling four-day window by incident type to see if there are any significant trends, starting two days before and looking one day ahead.
 
-Instructions
+
 100 XP
 Fill in the SQL to return the number of incidents from two periods ago.
 Fill in the SQL to return the number of incidents from the prior period.
@@ -1344,7 +1344,7 @@ Something you might have noticed in the prior two exercises is that we don't alw
 
 Recall that DATEDIFF() gives the difference between two dates. We can combine this with LAG() and LEAD() to get our results.
 
-Instructions
+
 100 XP
 Calculate the days since the last incident using a combination of DATEDIFF() and LAG() or LEAD().
 Calculate the days until the next incident using a combination of DATEDIFF() and LAG() or LEAD().
@@ -1379,7 +1379,7 @@ In this final set of exercises, we will analyze day spa data to look for potenti
 
 The key to thinking about overlapping entries is to unpivot our data and think about the stream of entries and exits. We will do that first.
 
-Instructions
+
 100 XP
 Split out start events and end events.
 
@@ -1417,7 +1417,7 @@ In the prior exercise, we broke out day spa data into a stream of entrances and 
 
 The results from the prior exercise are now in a temporary table called #StartStopPoints. The columns in this table are CustomerID, TimeUTC, EntryCount, and StartOrdinal. These are the only columns you will need to use in this exercise. TimeUTC represents the event time, EntryCount indicates the net change for the event (+1 or -1), and StartOrdinal appears for entrance events and gives the order of entry.
 
-Instructions
+
 100 XP
 Fill out the appropriate window function (ROW_NUMBER()) to create a stream of check-ins and check-outs in chronological order.
 Partition by the customer ID to calculate a result per user.
@@ -1441,7 +1441,7 @@ So far, we have broken out day spa data into a stream of entrances and exits and
 
 The results from the prior exercise are now in a temporary table called #StartStopOrder.
 
-Instructions 1/2
+ 1/2
 50 XP
 1
 2
