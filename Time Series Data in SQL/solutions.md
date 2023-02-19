@@ -1141,3 +1141,323 @@ ORDER BY
 	c.DayOfWeek,
 	c.IsWeekend;
 ```
+
+## Contrasting ROW_NUMBER(), RANK(), and DENSE_RANK()
+Among the ranking window functions, ROW_NUMBER() is the most common, followed by RANK() and DENSE_RANK(). Each of these ranking functions (as well as NTILE()) provides us with a different way to rank records in SQL Server.
+
+In this exercise, we would like to determine how frequently each we see incident type 3 in our data set. We would like to rank the number of incidents in descending order, such that the date with the highest number of incidents has a row number, rank, and dense rank of 1, and so on. To make it easier to follow, we will only include dates with at least 8 incidents.
+
+Instructions
+100 XP
+Fill in each window function based on the column alias. You should include ROW_NUMBER(), RANK(), and DENSE_RANK() exactly once.
+Fill in the OVER clause ordering by ir.NumberOfIncidents in descending order.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.NumberOfIncidents,
+    -- Fill in each window function and ordering
+	-- Note that all of these are in descending order!
+	ROW_NUMBER() OVER (ORDER BY ir.NumberOfIncidents DESC) AS rownum,
+	RANK() OVER (ORDER BY ir.NumberOfIncidents DESC) AS rk,
+	DENSE_RANK() OVER (ORDER BY ir.NumberOfIncidents DESC) AS dr
+FROM dbo.IncidentRollup ir
+WHERE
+	ir.IncidentTypeID = 3
+	AND ir.NumberOfIncidents >= 8
+ORDER BY
+	ir.NumberOfIncidents DESC;
+```
+
+## Aggregate window functions
+There are several aggregate window functions available to you. In this exercise, we will look at reviewing multiple aggregates over the same window.
+
+Our window this time will be the entire data set, meaning that our OVER() clause will remain empty.
+
+Instructions
+100 XP
+Fill in the correct aggregate function for each column in the result set.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.NumberOfIncidents,
+    -- Fill in the correct aggregate functions
+    -- You do not need to fill in the OVER clause
+	SUM(ir.NumberOfIncidents) OVER () AS SumOfIncidents,
+	MIN(ir.NumberOfIncidents) OVER () AS LowestNumberOfIncidents,
+	MAX(ir.NumberOfIncidents) OVER () AS HighestNumberOfIncidents,
+	COUNT(ir.NumberOfIncidents) OVER () AS CountOfIncidents
+FROM dbo.IncidentRollup ir
+WHERE
+	ir.IncidentDate BETWEEN '2019-07-01' AND '2019-07-31'
+AND ir.IncidentTypeID = 3;
+```
+
+## Running totals with SUM()
+One of the more powerful uses of window functions is calculating running totals: an ongoing tally of a particular value over a given stretch of time. Here, we would like to use a window function to calculate how many incidents have occurred on each date and incident type in July of 2019 as well as a running tally of the total number of incidents by incident type. A window function will help us solve this problem in one query.
+
+Instructions
+100 XP
+Fill in the correct window function.
+Fill in the PARTITION BY clause in the window function, partitioning by incident type ID.
+Fill in the ORDER BY clause in the window function, ordering by incident date (in its default, ascending order).
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.IncidentTypeID,
+	ir.NumberOfIncidents,
+    -- Get the total number of incidents
+	SUM(ir.NumberOfIncidents) OVER (
+      	-- Do this for each incident type ID
+		PARTITION BY ir.IncidentTypeID
+      	-- Sort by the incident date
+		ORDER BY ir.IncidentDate
+	) AS NumberOfIncidents
+FROM dbo.IncidentRollup ir
+	INNER JOIN dbo.Calendar c
+		ON ir.IncidentDate = c.Date
+WHERE
+	c.CalendarYear = 2019
+	AND c.CalendarMonth = 7
+	AND ir.IncidentTypeID IN (1, 2)
+ORDER BY
+	ir.IncidentTypeID,
+	ir.IncidentDate;	
+```
+
+## Calculating moving averages
+Instead of looking at a running total from the beginning of time until now, management would like to see the average number of incidents over the past 7 days--that is, starting 6 days ago and ending on the current date. Because this is over a specified frame which changes over the course of our query, this is called a moving average.
+
+SQL Server does not have the ability to look at ranges of time in window functions, so we will need to assume that there is one row per day and use the ROWS clause.
+
+Instructions
+100 XP
+Fill in the correct window function to perform a moving average starting from 6 days ago through today (the current row).
+Fill in the window frame, including the ROWS clause, window frame preceding, and window frame following.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.IncidentTypeID,
+	ir.NumberOfIncidents,
+    -- Fill in the correct window function
+	AVG(ir.NumberOfIncidents) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+      	-- Fill in the three parts of the window frame
+		ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
+	) AS MeanNumberOfIncidents
+FROM dbo.IncidentRollup ir
+	INNER JOIN dbo.Calendar c
+		ON ir.IncidentDate = c.Date
+WHERE
+	c.CalendarYear = 2019
+	AND c.CalendarMonth IN (7, 8)
+	AND ir.IncidentTypeID = 1
+ORDER BY
+	ir.IncidentTypeID,
+	ir.IncidentDate;
+```
+## Seeing prior and future periods
+The LAG() and LEAD() window functions give us the ability to look backward or forward in time, respectively. This gives us the ability to compare period-over-period data in a single, easy query.
+
+In this exercise, we want to compare the number of security incidents by day for incident types 1 and 2 during July of 2019, specifically the period starting on July 2nd and ending July 31st.
+
+Instructions
+100 XP
+Fill in the window function to return the prior day's number of incidents, partitioned by incident type ID and ordered by the incident date.
+Fill in the window function to return the next day's number of incidents, partitioned by incident type ID and ordered by the incident date.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.IncidentTypeID,
+    -- Get the prior day's number of incidents
+	LAG(ir.NumberOfIncidents, 1) OVER (
+      	-- Partition by incident type ID
+		PARTITION BY ir.IncidentTypeID
+      	-- Order by incident date
+		ORDER BY ir.IncidentDate
+	) AS PriorDayIncidents,
+	ir.NumberOfIncidents AS CurrentDayIncidents,
+    -- Get the next day's number of incidents
+	LEAD(ir.NumberOfIncidents, 1) OVER (
+      	-- Partition by incident type ID
+		PARTITION BY ir.IncidentTypeID
+      	-- Order by incident date
+		ORDER BY ir.IncidentDate
+	) AS NextDayIncidents
+FROM dbo.IncidentRollup ir
+WHERE
+	ir.IncidentDate >= '2019-07-02'
+	AND ir.IncidentDate <= '2019-07-31'
+	AND ir.IncidentTypeID IN (1, 2)
+ORDER BY
+	ir.IncidentTypeID,
+	ir.IncidentDate;
+```
+## Seeing the prior three periods
+The LAG() and LEAD() window functions give us the ability to look backward or forward in time, respectively. This gives us the ability to compare period-over-period data in a single, easy query. Each call to LAG() or LEAD() returns either a NULL or a single row. If you want to see multiple periods back, you can include multiple calls to LAG() or LEAD().
+
+In this exercise, we want to compare the number of security incidents by day for incident types 1 and 2 during July of 2019, specifically the period starting on July 2nd and ending July 31st. Management would like to see a rolling four-day window by incident type to see if there are any significant trends, starting two days before and looking one day ahead.
+
+Instructions
+100 XP
+Fill in the SQL to return the number of incidents from two periods ago.
+Fill in the SQL to return the number of incidents from the prior period.
+Fill in the SQL to return the number of incidents from the next period.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.IncidentTypeID,
+    -- Fill in two periods ago
+	LAG(ir.NumberOfIncidents, 2) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+	) AS Trailing2Day,
+    -- Fill in one period ago
+	LAG(ir.NumberOfIncidents, 1) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+	) AS Trailing1Day,
+	ir.NumberOfIncidents AS CurrentDayIncidents,
+    -- Fill in next period
+	LEAD(ir.NumberOfIncidents, 1) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+	) AS NextDay
+FROM dbo.IncidentRollup ir
+WHERE
+	ir.IncidentDate >= '2019-07-01'
+	AND ir.IncidentDate <= '2019-07-31'
+	AND ir.IncidentTypeID IN (1, 2)
+ORDER BY
+	ir.IncidentTypeID,
+	ir.IncidentDate;
+```
+
+## Calculating days elapsed between incidents
+Something you might have noticed in the prior two exercises is that we don't always have incidents on every day of the week, so calling LAG() and LEAD() the "prior day" is a little misleading; it's really the "prior period." Someone in management noticed this as well and, at the end of July, wanted to know the number of days between incidents. To do this, we will calculate two values: the number of days since the prior incident and the number of days until the next incident.
+
+Recall that DATEDIFF() gives the difference between two dates. We can combine this with LAG() and LEAD() to get our results.
+
+Instructions
+100 XP
+Calculate the days since the last incident using a combination of DATEDIFF() and LAG() or LEAD().
+Calculate the days until the next incident using a combination of DATEDIFF() and LAG() or LEAD().
+NOTE: you will not need to use the NumberOfIncidents column in this exercise.
+
+```sql
+SELECT
+	ir.IncidentDate,
+	ir.IncidentTypeID,
+    -- Fill in the days since last incident
+	DATEDIFF(DAY, LAG(ir.IncidentDate, 1) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+	), ir.IncidentDate) AS DaysSinceLastIncident,
+    -- Fill in the days until next incident
+	DATEDIFF(DAY, ir.IncidentDate, LEAD(ir.IncidentDate, 1) OVER (
+		PARTITION BY ir.IncidentTypeID
+		ORDER BY ir.IncidentDate
+	)) AS DaysUntilNextIncident
+FROM dbo.IncidentRollup ir
+WHERE
+	ir.IncidentDate >= '2019-07-02'
+	AND ir.IncidentDate <= '2019-07-31'
+	AND ir.IncidentTypeID IN (1, 2)
+ORDER BY
+	ir.IncidentTypeID,
+	ir.IncidentDate;
+```
+
+## Analyze client data for potential fraud
+In this final set of exercises, we will analyze day spa data to look for potential fraud. Our company gives each customer one pass for personal use and a single guest pass. We have check-in and check-out data for each client and guest passes tie back to the base customer ID. This means that there might be overlap when a client and guest both check in together. We want to see if there are at least three overlapping entries for a single client, as that would be a violation of our business rule.
+
+The key to thinking about overlapping entries is to unpivot our data and think about the stream of entries and exits. We will do that first.
+
+Instructions
+100 XP
+Split out start events and end events.
+
+Fill in the customer's visit start date (dsv.CustomerVisitStart) as TimeUTC in the "entrances" part of the query.
+Fill in the window function that we alias as StartStopPoints to give us the stream of check-ins for each customer, ordered by their visit start date.
+Fill in the customer's visit end date (dsv.CustomerVisitEnd) as TimeUTC in the "departures" part of the query.
+
+```sql
+-- This section focuses on entrances:  CustomerVisitStart
+SELECT
+	dsv.CustomerID,
+	dsv.CustomerVisitStart AS TimeUTC,
+	1 AS EntryCount,
+    -- We want to know each customer's entrance stream
+    -- Get a unique, ascending row number
+	ROW_NUMBER() OVER (
+      -- Break this out by customer ID
+      PARTITION BY dsv.CustomerID
+      -- Ordered by the customer visit start date
+      ORDER BY dsv.CustomerVisitStart
+    ) AS StartOrdinal
+FROM dbo.DaySpaVisit dsv
+UNION ALL
+-- This section focuses on departures:  CustomerVisitEnd
+SELECT
+	dsv.CustomerID,
+	dsv.CustomerVisitEnd AS TimeUTC,
+	-1 AS EntryCount,
+	NULL AS StartOrdinal
+FROM dbo.DaySpaVisit dsv
+```
+
+## Build a stream of events
+In the prior exercise, we broke out day spa data into a stream of entrances and exits. Unpivoting the data allows us to move to the next step, which is to order the entire stream.
+
+The results from the prior exercise are now in a temporary table called #StartStopPoints. The columns in this table are CustomerID, TimeUTC, EntryCount, and StartOrdinal. These are the only columns you will need to use in this exercise. TimeUTC represents the event time, EntryCount indicates the net change for the event (+1 or -1), and StartOrdinal appears for entrance events and gives the order of entry.
+
+Instructions
+100 XP
+Fill out the appropriate window function (ROW_NUMBER()) to create a stream of check-ins and check-outs in chronological order.
+Partition by the customer ID to calculate a result per user.
+Order by the event time and solve ties by using the start ordinal value.
+
+```sql
+SELECT s.*,
+    -- Build a stream of all check-in and check-out events
+	ROW_NUMBER() OVER (
+      -- Break this out by customer ID
+      PARTITION BY s.CustomerID
+      -- Order by event time and then the start ordinal
+      -- value (in case of exact time matches)
+      ORDER BY s.TimeUTC, s.StartOrdinal
+    ) AS StartOrEndOrdinal
+FROM #StartStopPoints s;
+```
+
+## Complete the fraud analysis
+So far, we have broken out day spa data into a stream of entrances and exits and ordered this stream chronologically. This stream contains two critical fields, StartOrdinal and StartOrEndOrdinal. StartOrdinal is the chronological ordering of all entrances. StartOrEndOrdinal contains all entrances and exits in order. Armed with these two pieces of information, we can find the maximum number of concurrent visits.
+
+The results from the prior exercise are now in a temporary table called #StartStopOrder.
+
+Instructions 1/2
+50 XP
+1
+2
+Fill out the HAVING clause to determine cases with more than 2 concurrent visitors.
+Fill out the ORDER BY clause to show management the worst offenders: those with the highest values for MaxConcurrentCustomerVisits.
+
+```sql
+SELECT
+	s.CustomerID,
+	MAX(2 * s.StartOrdinal - s.StartOrEndOrdinal) AS MaxConcurrentCustomerVisits
+FROM #StartStopOrder s
+WHERE s.EntryCount = 1
+GROUP BY s.CustomerID
+-- The difference between 2 * start ordinal and the start/end
+-- ordinal represents the number of concurrent visits
+HAVING MAX(2 * s.StartOrdinal - s.StartOrEndOrdinal) > 2
+-- Sort by the largest number of max concurrent customer visits
+ORDER BY MaxConcurrentCustomerVisits DESC;
+```
