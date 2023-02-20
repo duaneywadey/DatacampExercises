@@ -342,3 +342,384 @@ HAVING SUM(gold) > 2
 -- Sort to show the most gold medals at the top
 ORDER BY gold_medals DESC;
 ```
+
+## JOIN then UNION query
+Your goal is to create a report with the following fields:
+
+season, which outputs either summer or winter
+country
+events, which shows the unique number of events
+There are multiple ways to create this report. In this exercise, create the report by using the JOIN first, UNION second approach.
+
+As always, feel free to reference your E:R Diagram to identify relevant fields and tables.
+
+Instructions
+100 XP
+Setup a query that shows unique events by country and season for summer events.
+Setup a similar query that shows unique events by country and season for winter events.
+Combine the two queries using a UNION ALL.
+Sort the report by events in descending order.
+
+```sql
+-- Query season, country, and events for all summer events
+SELECT 
+  'summer' AS season, 
+    country, 
+    COUNT(DISTINCT event) AS events
+FROM summer_games AS s
+JOIN countries AS c
+ON s.country_id = c.id
+GROUP BY country
+-- Combine the queries
+UNION ALL
+-- Query season, country, and events for all winter events
+SELECT 
+  'winter' AS season, 
+    country, 
+    COUNT(DISTINCT event) AS events
+FROM winter_games AS w
+JOIN countries AS c
+ON w.country_id = c.id
+GROUP BY country
+-- Sort the results to show most events at the top
+ORDER BY events DESC;
+```
+
+## UNION then JOIN query
+Your goal is to create the same report as before, which contains with the following fields:
+
+season, which outputs either summer or winter
+country
+events, which shows the unique number of events
+In this exercise, create the query by using the UNION first, JOIN second approach. When taking this approach, you will need to use the initial UNION query as a subquery. The subquery will need to include all relevant fields, including those used in a join.
+
+As always, feel free to reference the E:R Diagram.
+
+Instructions
+100 XP
+In the subquery, construct a query that outputs season, country_id and event by combining summer and winter games with a UNION ALL.
+Leverage a JOIN and another SELECT statement to show the fields season, country and unique events.
+GROUP BY any unaggregated fields.
+Sort the report by events in descending order.
+
+```sql
+-- Add outer layer to pull season, country and unique events
+SELECT 
+  season, 
+    country, 
+    COUNT(DISTINCT event) AS events
+FROM
+    -- Pull season, country_id, and event for both seasons
+    (SELECT 
+      'summer' AS season, 
+      country_id, 
+      event
+    FROM summer_games
+    UNION ALL
+    SELECT 
+      'winter' AS season, 
+      country_id, 
+      event
+    FROM winter_games) AS subquery
+JOIN countries AS c
+ON subquery.country_id = c.id
+-- Group by any unaggregated fields
+GROUP BY season, country
+-- Order to show most events at the top
+ORDER BY events DESC;
+```
+
+## CASE statement refresher
+CASE statements are useful for grouping values into different buckets based on conditions you specify. Any row that fails to satisfy any condition will fall to the ELSE statement (or show as null if no ELSE statement exists).
+
+In this exercise, your goal is to create the segment field that buckets an athlete into one of three segments:
+
+Tall Female, which represents a female that is at least 175 centimeters tall.
+Tall Male, which represents a male that is at least 190 centimeters tall.
+Other
+Each segment will need to reference the fields height and gender from the athletes table. Leverage CASE statements and conditional logic (such as AND/OR) to build this.
+
+Remember that each line of a case statement looks like this: CASE WHEN {condition} THEN {output}
+
+Instructions
+100 XP
+Update the CASE statement to output three values: Tall Female, Tall Male, and Other.
+
+```sql
+SELECT 
+  name,
+    -- Output 'Tall Female', 'Tall Male', or 'Other'
+  CASE WHEN gender = 'F' AND height >= 175 THEN 'Tall Female'
+    WHEN gender = 'M' AND height >= 190 THEN 'Tall Male'
+    ELSE 'Other' END AS segment
+FROM athletes;
+```
+
+## BMI bucket by sport
+You are looking to understand how BMI differs by each summer sport. To answer this, set up a report that contains the following:
+
+sport, which is the name of the summer sport
+bmi_bucket, which splits up BMI into three groups: <.25, .25-.30, >.30
+athletes, or the unique number of athletes
+Definition: BMI = 100 * weight / (height squared).
+
+Also note that CASE statements run row-by-row, so the second conditional is only applied if the first conditional is false. This makes it that you do not need an AND statement excluding already-mentioned conditionals.
+
+Feel free to reference the E:R Diagram.
+
+Instructions
+100 XP
+Build a query that pulls from summer_games and athletes to show sport, bmi_bucket, and athletes.
+Without using AND or ELSE, set up a CASE statement that splits bmi_bucket into three groups: '<.25', '.25-.30', and '>.30'.
+Group by the non-aggregated fields.
+Order the report by sport and then athletes in descending order.
+
+```sql
+-- Pull in sport, bmi_bucket, and athletes
+SELECT 
+  sport,
+    -- Bucket BMI in three groups: <.25, .25-.30, and >.30  
+    CASE WHEN 100*weight/height^2 <.25 THEN '<.25'
+    WHEN 100*weight/height^2 <=.30 THEN '.25-.30'
+    WHEN 100*weight/height^2 >.30 THEN '>.30' END AS bmi_bucket,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games AS s
+JOIN athletes AS a
+ON s.athlete_id = a.id
+-- GROUP BY non-aggregated fields
+GROUP BY sport, bmi_bucket
+-- Sort by sport and then by athletes in descending order
+ORDER BY sport, athletes DESC;
+```
+## Troubleshooting CASE statements
+In the previous exercise, you may have noticed several null values in our case statement, which can indicate there is an issue with the code.
+
+In these instances, it's worth investigating to understand why these null values are appearing. In this exercise, you will go through a series of steps to identify the issue and make changes to the code where necessary.
+
+Instructions 1/3
+35 XP
+1
+2
+3
+Comment out the query from last exercise (lines 2 - 12).
+Create a query that pulls height, weight, and bmi from athletes and filters for null bmi values.
+
+```sql
+-- Query from last exercise shown below.  Comment it out.
+/*SELECT 
+  sport,
+    CASE WHEN weight/height^2*100 <.25 THEN '<.25'
+    WHEN weight/height^2*100 <=.30 THEN '.25-.30'
+    WHEN weight/height^2*100 >.30 THEN '>.30' END AS bmi_bucket,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games AS s
+JOIN athletes AS a
+ON s.athlete_id = a.id
+GROUP BY sport, bmi_bucket
+ORDER BY sport, athletes DESC;*/
+
+-- Show height, weight, and bmi for all athletes
+SELECT 
+  height, 
+    weight, 
+    weight/height^2*100 AS bmi
+FROM athletes
+-- Filter for NULL bmi values
+WHERE weight/height^2*100 IS NULL;
+```
+## Troubleshooting CASE statements
+In the previous exercise, you may have noticed several null values in our case statement, which can indicate there is an issue with the code.
+
+In these instances, it's worth investigating to understand why these null values are appearing. In this exercise, you will go through a series of steps to identify the issue and make changes to the code where necessary.
+
+Instructions 3/3
+0 XP
+3
+Comment out the troubleshooting query, uncomment the original query, and add an ELSE line to the CASE statement that outputs 'no weight recorded'.
+
+```sql
+-- Uncomment the original query
+SELECT 
+  sport,
+    CASE WHEN weight/height^2*100 <.25 THEN '<.25'
+    WHEN weight/height^2*100 <=.30 THEN '.25-.30'
+    WHEN weight/height^2*100 >.30 THEN '>.30'
+    -- Add ELSE statement to output 'no weight recorded'
+    ELSE 'no weight recorded' END AS bmi_bucket,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games AS s
+JOIN athletes AS a
+ON s.athlete_id = a.id
+GROUP BY sport, bmi_bucket
+ORDER BY sport, athletes DESC;
+
+-- Comment out the troubleshooting query
+/*SELECT 
+  height, 
+    weight, 
+    weight/height^2*100 AS bmi
+FROM athletes
+WHERE weight/height^2*100 IS NULL;*/
+```
+
+## Filtering with a JOIN
+When adding a filter to a query that requires you to reference a separate table, there are different approaches you can take. One option is to JOIN to the new table and then add a basic WHERE statement.
+
+Your goal is to create a report with the following characteristics:
+
+First column is bronze_medals, or the total number of bronze.
+Second column is silver_medals, or the total number of silver.
+Third column is gold_medals, or the total number of gold.
+Only summer_games are included.
+Report is filtered to only include athletes age 16 or under.
+In this exercise, use the JOIN approach.
+
+Instructions
+0 XP
+Create a query that pulls total bronze_medals, silver_medals, and gold_medals from summer_games.
+Use a JOIN and a WHERE statement to filter for athletes ages 16 and below.
+
+```sql
+-- Pull summer bronze_medals, silver_medals, and gold_medals
+SELECT 
+  SUM(bronze) AS bronze_medals, 
+    SUM(silver) AS silver_medals, 
+    SUM(gold) AS gold_medals
+FROM summer_games AS s
+JOIN athletes AS a
+ON s.athlete_id = a.id
+-- Filter for athletes age 16 or below
+WHERE age <= 16;
+```
+
+## Filtering with a subquery
+Another approach to filter from a separate table is to use a subquery. The process is as follows:
+
+Create a subquery that outputs a list.
+In your main query, add a WHERE statement that references the list.
+Your goal is to create the same report as the last exercise, which contains the following characteristics:
+
+First column is bronze_medals, or the total number of bronze.
+Second column is silver_medals, or the total number of silver.
+Third column is gold_medals, or the total number of gold.
+Only summer_games are included.
+Report is filtered to only include athletes age 16 or under.
+In this exercise, use the subquery approach.
+
+Instructions
+100 XP
+Create a query that pulls total bronze_medals, silver_medals, and gold_medals from summer_games.
+Setup a subquery that outputs all athletes age 16 or below.
+Add a WHERE statement that references the subquery to filter for athletes age 16 or below.
+
+```sql
+-- Pull summer bronze_medals, silver_medals, and gold_medals
+SELECT 
+  SUM(bronze) AS bronze_medals, 
+    SUM(silver) AS silver_medals, 
+    SUM(gold) AS gold_medals
+FROM summer_games
+-- Add the WHERE statement below
+WHERE athlete_id IN
+    -- Create subquery list for athlete_ids age 16 or below   
+    (SELECT id
+     FROM athletes
+     WHERE age <= 16);
+```
+
+## Report 2: Top athletes in nobel-prized countries
+It's time to bring together all the concepts brought up in this chapter to expand on your dashboard! Your next report to build is Report 2: Athletes Representing Nobel-Prize Winning Countries.
+
+Report Details:
+
+Column 1 should be event, which represents the Olympic event. Both summer and winter events should be included.
+Column 2 should be gender, which represents the gender of athletes in the event.
+Column 3 should be athletes, which represents the unique athletes in the event.
+Athletes from countries that have had no nobel_prize_winners should be excluded.
+The report should contain 10 events, where events with the most athletes show at the top.
+Click to view the E:R Diagram.
+
+Instructions 1/4
+1 XP
+1
+2
+3
+4
+Select event from the summer_games table and create the athletes field by counting the distinct number of athlete_id.
+
+```sql
+-- Pull event and unique athletes from summer_games 
+SELECT 
+  event, 
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games
+GROUP BY event;
+```
+
+Explore the event field to determine how to split up events by gender (without adding a join), then add the gender field by using a CASE statement that specifies a conditional for 'female' events (all other events should output as 'male').
+
+```sql
+-- Pull event and unique athletes from summer_games 
+SELECT 
+    event,
+    -- Add the gender field below
+    CASE WHEN event LIKE '%Women%' THEN 'female' 
+    ELSE 'male' END AS gender,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games
+GROUP BY event;
+```
+
+Filter for Nobel-prize-winning countries by creating a subquery that outputs country_id from the country_stats table for any country with more than zero nobel_prize_winners.
+
+```sql
+-- Pull event and unique athletes from summer_games 
+SELECT 
+    event,
+    -- Add the gender field below
+    CASE WHEN event LIKE '%Women%' THEN 'female' 
+    ELSE 'male' END AS gender,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games
+-- Only include countries that won a nobel prize
+WHERE country_id IN 
+  (SELECT country_id 
+    FROM country_stats 
+    WHERE nobel_prize_winners > 0)
+GROUP BY event;
+```
+
+Copy your query with summer_games replaced by winter_games, UNION the two tables together, and order the final report to show the 10 rows with the most athletes.
+
+```sql
+-- Pull event and unique athletes from summer_games 
+SELECT 
+    event,
+    -- Add the gender field below
+    CASE WHEN event LIKE '%Women%' THEN 'female' 
+    ELSE 'male' END AS gender,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM summer_games
+-- Only include countries that won a nobel prize
+WHERE country_id IN 
+  (SELECT country_id 
+    FROM country_stats 
+    WHERE nobel_prize_winners > 0)
+GROUP BY event
+-- Add the second query below and combine with a UNION
+UNION
+SELECT 
+    event,
+    CASE WHEN event LIKE '%Women%' THEN 'female' 
+    ELSE 'male' END AS gender,
+    COUNT(DISTINCT athlete_id) AS athletes
+FROM winter_games
+WHERE country_id IN 
+  (SELECT country_id 
+    FROM country_stats 
+    WHERE nobel_prize_winners > 0)
+GROUP BY event
+-- Order and limit the final output
+ORDER BY athletes DESC
+LIMIT 10;
+```
