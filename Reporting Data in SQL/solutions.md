@@ -52,7 +52,7 @@ Now, build the base report for this visualization:
 
 This should be built by querying the summer_games table, found in the explorer on the bottom right.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Using the console on the right, select the sport field from the summer_games table.
 Create athletes by counting the distinct occurrences of athlete_id.
@@ -76,7 +76,7 @@ Now consider the following visualization:
 
 Using the summer_games table, run a query that creates the base report that sources this visualization.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Pull a report that shows each sport, the number of unique events, and the number of unique athletes from the summer_games table.
 Group by the non-aggregated field, which is sport.
@@ -142,7 +142,7 @@ You are given the following E:R diagram:
 
 In the previous exercise, you identified which tables are needed to create a report that shows Age of Oldest Athlete by Region. Now, set up the query to create this report.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Create a report that shows region and age_of_oldest_athlete.
 Include all three tables by running two separate JOIN statements.
@@ -173,7 +173,7 @@ Since the company will be involved in both summer sports and winter sports, it i
 
 Your task is to create a query that shows the unique number of events held for each sport. Note that since no relationships exist between these two tables, you will need to use a UNION instead of a JOIN.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Create a report that shows unique events by sport for both summer and winter events.
 Use a UNION to combine the relevant tables.
@@ -242,7 +242,7 @@ Let’s practice exploring our dataset, then finish up the chapter by creating o
 ## Exploring summer_games
 Exploring the data in a table can provide further insights into the database as a whole. In this exercise, you will try out a series of different techniques to explore the summer_games table.
 
-Instructions 4/4
+<h4>Instructions</h4> 4/4
 25 XP
 4
 Let's see how much of our dataset is NULL. Add a field that shows number of rows to your query.
@@ -263,7 +263,7 @@ In this exercise, you will create a query that shows Bronze Medals by Country an
 
 Feel free to reference the E:R Diagram as needed.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -320,9 +320,9 @@ Column 1 should be athlete_name.
 Column 2 should be gold_medals.
 The report should only include athletes with at least 3 medals.
 The report should be ordered by gold medals won, with the most medals at the top.
-Instructions
+<h4>Instructions</h4>
 100 XP
-Instructions
+<h4>Instructions</h4>
 100 XP
 Select athlete_name and gold_medals by joining summer_games and athletes.
 Only include athlete_name with at least 3 gold medals.
@@ -353,7 +353,7 @@ There are multiple ways to create this report. In this exercise, create the repo
 
 As always, feel free to reference your E:R Diagram to identify relevant fields and tables.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Setup a query that shows unique events by country and season for summer events.
 Setup a similar query that shows unique events by country and season for winter events.
@@ -395,7 +395,7 @@ In this exercise, create the query by using the UNION first, JOIN second approac
 
 As always, feel free to reference the E:R Diagram.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 In the subquery, construct a query that outputs season, country_id and event by combining summer and winter games with a UNION ALL.
 Leverage a JOIN and another SELECT statement to show the fields season, country and unique events.
@@ -441,7 +441,7 @@ Each segment will need to reference the fields height and gender from the athlet
 
 Remember that each line of a case statement looks like this: CASE WHEN {condition} THEN {output}
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Update the CASE statement to output three values: Tall Female, Tall Male, and Other.
 
@@ -467,7 +467,7 @@ Also note that CASE statements run row-by-row, so the second conditional is only
 
 Feel free to reference the E:R Diagram.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Build a query that pulls from summer_games and athletes to show sport, bmi_bucket, and athletes.
 Without using AND or ELSE, set up a CASE statement that splits bmi_bucket into three groups: '<.25', '.25-.30', and '>.30'.
@@ -496,7 +496,7 @@ In the previous exercise, you may have noticed several null values in our case s
 
 In these instances, it's worth investigating to understand why these null values are appearing. In this exercise, you will go through a series of steps to identify the issue and make changes to the code where necessary.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -532,7 +532,7 @@ In the previous exercise, you may have noticed several null values in our case s
 
 In these instances, it's worth investigating to understand why these null values are appearing. In this exercise, you will go through a series of steps to identify the issue and make changes to the code where necessary.
 
-Instructions 3/3
+<h4>Instructions</h4> 3/3
 0 XP
 3
 Comment out the troubleshooting query, uncomment the original query, and add an ELSE line to the CASE statement that outputs 'no weight recorded'.
@@ -574,7 +574,7 @@ Only summer_games are included.
 Report is filtered to only include athletes age 16 or under.
 In this exercise, use the JOIN approach.
 
-Instructions
+<h4>Instructions</h4>
 0 XP
 Create a query that pulls total bronze_medals, silver_medals, and gold_medals from summer_games.
 Use a JOIN and a WHERE statement to filter for athletes ages 16 and below.
@@ -606,7 +606,7 @@ Only summer_games are included.
 Report is filtered to only include athletes age 16 or under.
 In this exercise, use the subquery approach.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Create a query that pulls total bronze_medals, silver_medals, and gold_medals from summer_games.
 Setup a subquery that outputs all athletes age 16 or below.
@@ -639,7 +639,7 @@ Athletes from countries that have had no nobel_prize_winners should be excluded.
 The report should contain 10 events, where events with the most athletes show at the top.
 Click to view the E:R Diagram.
 
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 1 XP
 1
 2
@@ -731,7 +731,7 @@ The columns table houses useful details about the columns, including the data ty
 
 Note that the information_schema is not the default schema SQL looks at when querying, which means you will need to explicitly tell SQL to pull from this schema. To pull a table from a non-default schema, use the syntax schema_name.table_name.
 
-Instructions 1/2
+<h4>Instructions</h4> 1/2
 0 XP
 1
 2
@@ -752,7 +752,7 @@ Inevitably, you will run into errors when running SQL queries. It is important t
 
 The console contains two separate queries, each which will output an error when ran. In this exercise, you will run each query, read the error message, and troubleshoot the error.
 
-Instructions 1/2
+<h4>Instructions</h4> 1/2
 50 XP
 1
 Run the query in the console.
@@ -806,7 +806,7 @@ In general, the arguments for both functions are ('period', field), where period
 
 In this exercise, your goal is to test out these date functions on the country_stats table, specifically by outputting the decade of each year using two separate approaches. To run these functions, you will need to use CAST() function on the year field.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Pulling from the country_stats table, select the decade using two methods: DATE_PART() and DATE_TRUNC.
 Convert the data type of the year field to fix errors.
@@ -834,7 +834,7 @@ The INITCAP(fieldName) function changes the case of all characters in fieldName 
 The LEFT(fieldName,N) function returns the left N characters of the string fieldName.
 The SUBSTRING(fieldName from S for N) returns N characters starting from position S of the string fieldName. Note that both from S and for N are optional.
 
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 25 XP
 Update the field country_altered to output country in all lower-case.
 
@@ -889,7 +889,7 @@ Where fieldName is the field or string being updated, searchFor is the character
 
 In this exercise, you will look at one specific value in the countries table and change up the format by using a few REPLACE() functions.
 
-Instructions 1/2
+<h4>Instructions</h4> 1/2
 50 XP
 1
 2
@@ -929,7 +929,7 @@ One issues with having strings stored in different formats is that you may incor
 
 In this exercise, you will query from the summer_games_messy table, which is a messy, smaller version of summer_games. You'll notice that the same event is stored in multiple ways. Your job is to clean the event field to show the correct number of rows.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -982,7 +982,7 @@ These conditionals can be leveraged by several clauses, such as CASE statements,
 
 Feel free to reference the E:R Diagram.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -1046,7 +1046,7 @@ To replace null values with a string or a number, use the COALESCE() function. S
 
 This exercise will walk you through why null values can throw off calculations and how to troubleshoot these issues.
 
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 25 XP
 1
 2
@@ -1073,7 +1073,7 @@ To replace null values with a string or a number, use the COALESCE() function. S
 
 This exercise will walk you through why null values can throw off calculations and how to troubleshoot these issues.
 
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 1 XP
 1
 2
@@ -1132,7 +1132,7 @@ Check the total value of a metric from the original table.
 Compare that with the total value of the same metric in your final report.
 If the number from step 2 is larger than step 1, then duplication is likely the culprit. In this exercise, you will go through these steps to identify if duplication exists.
 
-Instructions 2/3
+<h4>Instructions</h4> 2/3
 35 XP
 2
 3
@@ -1186,7 +1186,7 @@ The final query from last exercise is shown in the console. Your job is to fix t
 
 Feel free to reference the E:R Diagram.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 Update the ON statement in the subquery by adding a second field to JOIN on.
 If an error occurs related to the new JOIN field, use a CAST() statement to fix it.
@@ -1214,7 +1214,7 @@ Column 1 should be country_code, which is an altered version of the country fiel
 Column 2 should be pop_in_millions, representing the population of the country (in millions).
 Column 3 should be medals, representing the total number of medals.
 Column 4 should be medals_per_million, which equals medals / pop_in_millions
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 25 XP
 1
 2
@@ -1364,7 +1364,7 @@ In this exercise, your task is to pull the average total_golds for all countries
 
 To avoid having to deal with null handling, we have created a summer_games_clean table. Please use this when building the report.
 
-Instructions 1/2
+<h4>Instructions</h4> 1/2
 50 XP
 1
 2
@@ -1414,7 +1414,7 @@ When set up correctly, a row_num = 1 represents the most decorated athlete withi
 
 Feel free to reference the E:R Diagram. We will use summer_games_clean to avoid null handling.
 
-Instructions 1/2
+<h4>Instructions</h4> 1/2
 50 XP
 1
 2
@@ -1473,7 +1473,7 @@ Create a window function that outputs the total volume, partitioned by whatever 
 Run a ratio that divides each row's volume metric by the total volume in the partition.
 In this exercise, you will calculate the percent of gdp for each country relative to the entire world and relative to that country's region.
 
-Instructions 1/4
+<h4>Instructions</h4> 1/4
 25 XP
 1
 2
@@ -1576,7 +1576,7 @@ In this exercise, you will calculate the gdp_per_million for each country relati
 gdp_per_million = gdp / pop_in_millions
 You will reference the country_stats_cleaned table, which is a copy of country_stats without data type issues.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -1660,7 +1660,7 @@ You can calculate the percent change using the following formula: (value)/(previ
 If no offset value is included in the LAG() or LEAD() functions, it will default to 1.
 Since the table stops in the middle of June, the query is set up to only include data to the end of May.
 
-Instructions
+<h4>Instructions</h4>
 100 XP
 From web_data, pull in country_id and use a DATE_PART() function to create month.
 Create month_views that pulls the total views within the month.
@@ -1690,7 +1690,7 @@ In this exercise, you will take the rolling 7 day average of views for each date
 
 Syntax for a rolling average is AVG(value) OVER (PARTITION BY field ORDER BY field ROWS BETWEEN N PRECEDING AND CURRENT ROW), where N is the number of rows to look back when doing the calculation. Remember that CURRENT ROW counts as a row.
 
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
@@ -1766,7 +1766,7 @@ Column 1 should be region found in the countries table.
 Column 2 should be avg_tallest, which averages the tallest athlete from each country within the region.
 Column 3 should be perc_world_gdp, which represents what % of the world's GDP is attributed to the region.
 Only winter_games should be included (no summer events).
-Instructions 1/3
+<h4>Instructions</h4> 1/3
 35 XP
 1
 2
