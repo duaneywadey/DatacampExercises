@@ -3,7 +3,7 @@
 ## Numbering rows
 The simplest application for window functions is numbering rows. Numbering rows allows you to easily fetch the nth row. For example, it would be very difficult to get the 35th row in any given table if you didn't have a column with each row's number.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Number each row in the dataset.
 
@@ -19,7 +19,7 @@ ORDER BY Row_N ASC;
 ## Numbering Olympic games in ascending order
 The Summer Olympics dataset contains the results of the games between 1896 and 2012. The first Summer Olympics were held in 1896, the second in 1900, and so on. What if you want to easily query the table to see in which year the 13th Summer Olympics were held? You'd need to number the rows for that.
 
-Instructions
+<h4>Instructions<h4>
 0 XP
 Assign a number to each year in which Summer Olympic games were held.
 
@@ -41,7 +41,7 @@ ORDER BY Year ASC;
 ## Numbering Olympic games in descending order
 You've already numbered the rows in the Summer Medals dataset. What if you need to reverse the row numbers so that the most recent Olympic games' rows have a lower number?
 
-Instructions
+<h4>Instructions<h4>
 0 XP
 Assign a number to each year in which Summer Olympic games were held so that rows with the most recent years have lower row numbers.
 
@@ -60,7 +60,7 @@ ORDER BY Year;
 ## Numbering Olympic athletes by medals earned
 Row numbering can also be used for ranking. For example, numbering rows and ordering by the count of medals each athlete earned in the OVER clause will assign 1 to the highest-earning medalist, 2 to the second highest-earning medalist, and so on.
 
-Instructions 1/2
+<h4>Instructions<h4> 1/2
 50 XP
 1
 2
@@ -98,7 +98,7 @@ ORDER BY Medals DESC;
 ## Reigning weightlifting champions
 A reigning champion is a champion who's won both the previous and current years' competitions. To determine if a champion is reigning, the previous and current years' results need to be in the same row, in two different columns.
 
-Instructions 1/2
+<h4>Instructions<h4> 1/2
 50 XP
 1
 2
@@ -144,7 +144,7 @@ ORDER BY Year ASC;
 ## Reigning champions by gender
 You've already fetched the previous year's champion for one event. However, if you have multiple events, genders, or other metrics as columns, you'll need to split your table into partitions to avoid having a champion from one event or gender appear as the previous champion of another event or gender.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the previous champions of each year's event by gender.
 
@@ -171,7 +171,7 @@ ORDER BY Gender ASC, Year ASC;
 ## Reigning champions by gender and event
 In the previous exercise, you partitioned by gender to ensure that data about one gender doesn't get mixed into data about the other gender. If you have multiple columns, however, partitioning by only one of them will still mix the results of the other columns.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the previous champions of each year's events by gender and event.
 
@@ -199,7 +199,7 @@ ORDER BY Event ASC, Gender ASC, Year ASC;
 ## Future gold medalists
 Fetching functions allow you to get values from different parts of the table into one row. If you have time-ordered data, you can "peek into the future" with the LEAD fetching function. This is especially useful if you want to compare a current value to a future value.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 For each year, fetch the current gold medalist and the gold medalist 3 competitions ahead of the current row.
 
@@ -226,7 +226,7 @@ ORDER BY Year ASC;
 ## First athlete by name
 It's often useful to get the first or last value in a dataset to compare all other values to it. With absolute fetching functions like FIRST_VALUE, you can fetch a value at an absolute position in the table, like its beginning or end.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return all athletes and the first athlete ordered by alphabetical order.
 
@@ -249,7 +249,7 @@ FROM All_Male_Medalists;
 ## Last country by name
 Just like you can get the first row's value in a dataset, you can get the last row's value. This is often useful when you want to compare the most recent value to previous values.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the year and the city in which each Olympic games were held.
 Fetch the last city in which the Olympic games were held.
@@ -276,7 +276,7 @@ ORDER BY Year ASC;
 ## Ranking athletes by medals earned
 In chapter 1, you used ROW_NUMBER to rank athletes by awarded medals. However, ROW_NUMBER assigns different numbers to athletes with the same count of awarded medals, so it's not a useful ranking function; if two athletes earned the same number of medals, they should have the same rank.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Rank each athlete by the number of medals they've earned -- the higher the count, the higher the rank -- with identical numbers in case of identical values.
 
@@ -302,7 +302,7 @@ In the previous exercise, you used RANK to assign rankings to one group of athle
 
 Also, while RANK skips numbers in case of identical values, the most natural way to assign rankings is not to skip numbers. If two countries are tied for second place, the country after them is considered to be third by most people.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Rank each country's athletes by the count of medals they've earned -- the higher the count, the higher the rank -- without skipping numbers in case of identical values.
 
@@ -330,7 +330,7 @@ ORDER BY Country ASC, RANK_N ASC;
 ## Paging events
 There are exactly 666 unique events in the Summer Medals Olympics dataset. If you want to chunk them up to analyze them piece by piece, you'll need to split the events into groups of approximately equal size.
 
-Instructions
+<h4>Instructions<h4>
 0 XP
 Split the distinct events into exactly 111 groups, ordered by event in alphabetical order.
 
@@ -350,7 +350,7 @@ ORDER BY Event ASC;
 ## Top, middle, and bottom thirds
 Splitting your data into thirds or quartiles is often useful to understand how the values in your dataset are spread. Getting summary statistics (averages, sums, standard deviations, etc.) of the top, middle, and bottom thirds can help you determine what distribution your values follow.
 
-Instructions 1/2
+<h4>Instructions<h4> 1/2
 50 XP
 1
 2
@@ -400,7 +400,7 @@ ORDER BY Third ASC;
 ## Running totals of athlete medals
 The running total (or cumulative sum) of a column helps you determine what each row's contribution is to the total sum.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the athletes, the number of medals they earned, and the medals running total, ordered by the athletes' names in alphabetical order.
 
@@ -426,7 +426,7 @@ ORDER BY Athlete ASC;
 ## Maximum country medals by year
 Getting the maximum of a country's earned medals so far helps you determine whether a country has broken its medals record by comparing the current year's earned medals and the maximum so far.
 
-Instructions
+<h4>Instructions<h4>
 70 XP
 Return the year, country, medals, and the maximum medals earned so far for each country, ordered by year in ascending order.
 
@@ -454,7 +454,7 @@ ORDER BY Country ASC, Year ASC;
 ## Minimum country medals by year
 So far, you've seen MAX and SUM, aggregate functions normally used with GROUP BY, being used as window functions. You can also use the other aggregate functions, like MIN, as window functions.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the year, medals earned, and minimum medals earned so far.
 
@@ -481,7 +481,7 @@ Frames allow you to restrict the rows passed as input to your window function to
 
 Adding a frame to your window function allows you to calculate "moving" metrics, inputs of which slide from row to row.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the year, medals earned, and the maximum medals earned, comparing only the current year and the next year.
 
@@ -510,7 +510,7 @@ ORDER BY Year ASC;
 ## Moving maximum of Chinese athletes' medals
 Frames allow you to "peek" forwards or backward without first using the relative fetching functions, LAG and LEAD, to fetch previous rows' values into the current row.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Return the athletes, medals earned, and the maximum medals earned, comparing only the last two and current athletes, ordering by athletes' names in alphabetical order.
 
@@ -539,7 +539,7 @@ ORDER BY Athlete ASC;
 ## Moving average of Russian medals
 Using frames with aggregate window functions allow you to calculate many common metrics, including moving averages and totals. These metrics track the change in performance over time.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Calculate the 3-year moving average of medals earned.
 
@@ -566,7 +566,7 @@ ORDER BY Year ASC;
 ## Moving total of countries' medals
 What if your data is split into multiple groups spread over one or more columns in the table? Even with a defined frame, if you can't somehow separate the groups' data, one group's values will affect the average of another group's values.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Calculate the 3-year moving sum of medals earned per country.
 
@@ -607,7 +607,7 @@ Pivot it by Year to get the following reshaped, cleaner table.
 | Men    | AUS  | FRA  |
 | Women  | RUS  | USA  |
 ```
-Instructions
+<h4>Instructions<h4>
 100 XP
 Create the correct extension.
 Fill in the column names of the pivoted table.
@@ -644,7 +644,7 @@ You want to produce an easy scannable table of the rankings of the three most po
 ```
 You'll need to count the gold medals each country has earned, produce the ranks of each country by medals earned, then pivot the table to this shape.
 
-Instructions 1/3
+<h4>Instructions<h4> 1/3
 35 XP
 1
 2
@@ -730,7 +730,7 @@ Order by Country ASC;
 ## Country-level subtotals
 You want to look at three Scandinavian countries' earned gold medals per country and gender in the year 2004. You're also interested in Country-level subtotals to get the total medals earned for each country, but Gender-level subtotals don't make much sense in this case, so disregard them.
 
-Instructions
+<h4>Instructions<h4>
 0 XP
 Count the gold medals awarded per country and gender.
 Generate Country-level gold award counts.
@@ -756,7 +756,7 @@ You want to break down all medals awarded to Russia in the 2012 Olympic games pe
 
 Generate a breakdown of the medals awarded to Russia per country and medal type, including all group-level subtotals and a grand total.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Count the medals awarded per gender and medal type.
 Generate all possible group-level counts (per gender and medal type subtotals and the grand total).
@@ -779,7 +779,7 @@ ORDER BY Gender ASC, Medal ASC;
 ## Cleaning up results
 Returning to the breakdown of Scandinavian awards you previously made, you want to clean up the results by replacing the nulls with meaningful text.
 
-Instructions
+<h4>Instructions<h4>
 100 XP
 Turn the nulls in the Country column to All countries, and the nulls in the Gender column to All genders.
 
@@ -812,7 +812,7 @@ into this:
 USA, RUS, AUS
 
 ```
-Instructions 1/2
+<h4>Instructions<h4> 1/2
 50 XP
 1
 2
