@@ -24,6 +24,25 @@ SELECT type, COUNT(type)
  -- tag types listed first
  ORDER BY COUNT(type) DESC;
 ```
+Instructions 2/2
+50 XP
+Join the tag_company, company, and tag_type tables, keeping only mutually occurring records.
+Select company.name, tag_type.tag, and tag_type.type for tags with the most common type from the previous step.
+
+```sql
+-- Select the 3 columns desired
+SELECT company.name, tag_type.tag, tag_type.type
+  FROM company
+  	   -- Join to the tag_company table
+       inner JOIN tag_company 
+       ON company.id = tag_company.company_id
+       -- Join to the tag_type table
+       inner JOIN tag_type
+       ON tag_company.tag = tag_type.tag
+  -- Filter to most common type
+  WHERE type='cloud';
+```
+
 
 ## Coalesce
 The coalesce() function can be useful for specifying a default or backup value when a column contains NULL values.
